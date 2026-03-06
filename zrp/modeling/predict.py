@@ -358,7 +358,11 @@ class ZRP_Predict(BaseZRP):
         
     def fit(self, data):
         if xgboost.__version__ != "1.0.2":
-            raise AssertionError("XGBoost version does not match requirements, required version is 1.0.2")
+            warnings.warn(
+                f"ZRP was originally developed with XGBoost 1.0.2; "
+                f"running with {xgboost.__version__}",
+                RuntimeWarning
+			)
 
         data_cols =  list(data.columns)
         self.required_cols = [self.first_name, self.middle_name, self.last_name, "GEOID", "B01003_001"]
