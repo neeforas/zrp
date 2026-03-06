@@ -70,7 +70,7 @@ class HandleCompoundNames(BaseEstimator, TransformerMixin):
         compound_tiled[self.last_name] = unrolled_names
         compound_result = compound_tiled[~compound_tiled[self.last_name].isna()]
 
-        joint_result = non_compound.append(compound_result).reset_index(drop=True)
+        joint_result = pd.concat([non_compound, compound_result], axis=0).reset_index(drop=True)
 
         return joint_result
 
