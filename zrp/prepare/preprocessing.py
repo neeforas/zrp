@@ -178,7 +178,7 @@ def replicate_address_2(data, street_address, street_suffix_mapping, add_to_flg 
     data[street_address] = np.where(data[street_address]=='nan', None, data[street_address])
     print("         ...Mapped & split by street suffixes...")
     # Remove addtl "-"
-    data[street_address] = data[street_address].str.split("-", 1, expand=True)[0]
+	data[street_address] = data[street_address].str.split("-", n=1, expand=True)[0]
     data[street_address] = data[street_address].str.replace(pat = "-", repl = "", regex=False)
     print("         ...Number processing...")
     data[street_address] = data[street_address].str.replace("^([0-9]{1,6}[A-Z]{1,3})", "", regex=True)
