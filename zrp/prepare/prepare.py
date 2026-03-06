@@ -93,7 +93,7 @@ class ZRP_Prepare(BaseZRP):
         
         geocode = ZGeo(file_path=self.file_path, **self.params_dict)
         geocode_out = [] 
-        geo_grps = data.groupby([self.state])
+        geo_grps = data.groupby(self.state)
         geo_dict = {}
         for s, g in geo_grps:
             geo_dict[s] = g
