@@ -13,6 +13,18 @@ import re
 import warnings
 warnings.filterwarnings(action='ignore')
 
+import logging
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+if logger.hasHandlers():
+    logger.handlers.clear()
+
+handler = logging.FileHandler('geocoder.log')
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
+
 def geo_search(geo_files_path, year, st_cty_code):
     """
     Returns a list of files associated with the state county code
@@ -115,6 +127,9 @@ class ZGeo(BaseZRP):
         :return: A DataFrame
         """
         
+        logger.info(f'NEW GEOCODER RUN')
+        logger.info(f'input_data shape: {input_data.shape}')
+        logger.info(f'input_data columns: {input_data.columns}')
         curpath = dirname(__file__)
         out_geo_path = os.path.join(curpath, '../data/processed/geo/2019')
 
@@ -148,6 +163,10 @@ class ZGeo(BaseZRP):
         
         print("      ...merge user input & lookup table")
         geo_df = data.merge(geo_df, on=["ZEST_FULLNAME"], how="left")
+        logger.info(f'After geo_df is created')
+        logger.info(f'geo_df shape: {geo_df.shape}')
+        logger.info(f'geo_df columns: {geo_df.columns}')
+        logger.info(f'Original ZIP: {data[self.zip_code].unique().tolist()}')
         
         geo_df['FROMHN_RIGHT'] = geo_df['FROMHN_RIGHT'].replace('nan', np.nan).fillna(-2).astype(float).astype(int)
         geo_df['TOHN_RIGHT'] = geo_df['TOHN_RIGHT'].replace('nan', np.nan).fillna(-2).astype(float).astype(int)
@@ -169,6 +188,9 @@ class ZGeo(BaseZRP):
         
         geo_df['ZCTA5CE'] = geo_df['ZCTA5CE'].replace('None', np.nan)
         geo_df["NEW_SUPER_ZIP"] = np.where(geo_df.ZCTA5CE == geo_df[self.zip_code], geo_df.ZCTA5CE, geo_df.ZEST_ZIP)
+        logger.info(f'After NEW_SUPER_ZIP added')
+        logger.info(f'geo_df shape: {geo_df.shape}')
+        logger.info(f'Unique NEW_SUPER_ZIP values: {geo_df["NEW_SUPER_ZIP"].unique().tolist()}')
         geo_df["ZIP_Match"] = np.where(geo_df.NEW_SUPER_ZIP == geo_df[self.zip_code], True, False) 
         geo_df = geo_df.drop(['ZEST_ZIP'], axis=1)
 
